@@ -8,18 +8,27 @@ var request = require('request');
 var cheerio = require('cheerio');
 
 
-router.get('/',function (req,res,next) {
+router.post('/',function (req,res,next) {
 
-    res.json([
-        {
-            newsID:5777,
-            title:"U.K. pound plunges 6% in mysterious flash crash",
-            excerpt:"The sudden plunge in early trading in Asia left investors stunned and analysts struggling to explain what could have caused such an unusual move.",
-            details:"The sudden plunge in early trading in Asia left investors stunned and analysts struggling to explain what could have caused such an unusual move.'It was just another quiet day in Asia, and then, Bang! All the lights went red,'' said Matt Simpson, senior market analyst at ThinkMarkets in Singapore.The pound had already sunk to a fresh 31-year low of around $1.26 on Thursday over deepening concerns that the U.K.'s split from the European Union will hurt the country's economy. Strategists had widely forecast it would go lower, but not as rapidly as it did on Friday.The flash crash yanked the British currency down to near $1.18. It recovered most of the losses soon afterward to trade around $1.24.",
-            publisher:"CNN",
-            date:"10/06/2016",
-            imageURL:"http://i2.cdn.turner.com/money/dam/assets/161007131114-pound-dollar-flash-crash-chart-780x439.png"
-        },
+    console.log(req.body);
+
+    var mode, degree;
+
+    if(req.body){
+        //calls to CNN  + BBC with thes logic >> mode, degree;
+    }
+    //LOGIC ///// CNN + BBC   , FETCHING RELEVANT NEWS,  CREATING RESPONSE
+
+        res.json([
+            {
+                newsID:5777,
+                title:"U.K. pound plunges 6% in mysterious flash crash",
+                excerpt:"The sudden plunge in early trading in Asia left investors stunned and analysts struggling to explain what could have caused such an unusual move.",
+                details:"The sudden plunge in early trading in Asia left investors stunned and analysts struggling to explain what could have caused such an unusual move.'It was just another quiet day in Asia, and then, Bang! All the lights went red,'' said Matt Simpson, senior market analyst at ThinkMarkets in Singapore.The pound had already sunk to a fresh 31-year low of around $1.26 on Thursday over deepening concerns that the U.K.'s split from the European Union will hurt the country's economy. Strategists had widely forecast it would go lower, but not as rapidly as it did on Friday.The flash crash yanked the British currency down to near $1.18. It recovered most of the losses soon afterward to trade around $1.24.",
+                publisher:"CNN",
+                date:"10/06/2016",
+                imageURL:"http://i2.cdn.turner.com/money/dam/assets/161007131114-pound-dollar-flash-crash-chart-780x439.png"
+            },
         {
             newsID:5778,
             title:"Florida could be hit twice by Hurricane Matthew",
