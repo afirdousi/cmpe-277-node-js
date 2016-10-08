@@ -5,21 +5,99 @@ var newsDataEngine = require('../data/news');
 
 var fs = require('fs');
 var request = require('request');
-var cheerio = require('cheerio');
+var utils = require('../utils/utils');
+
+function isProperDataSent(body) {
+    return !body.emotion || !body.degree || !body.age || !body.ethnicity;
+}
+
+function selectDataSource(ethnicity) {
+
+    //Possible Values: Caucasian,African,East Asian,South Asian,Hispanic
+
+    if(ethnicity.trim().toLowerCase()!="caucasian"){
+        return "BBC";
+    }else{
+        return "CNN";
+    }
+
+}
+
+function getDataPaths(dataSource) {
+
+    var dataPath = {};
+
+    if(dataSource==="CNN"){
+        //for CNN
+        dataPath.accessURL = {};
+        dataPath.accessURL.main = "http://www.cnn.com";
+        dataPath.accessURL.world = "/world";
+        dataPath.accessURL.asia = "/asia";
+        dataPath.accessURL.europe = "/europe";
+        dataPath.accessURL.america = "/americas";
+        dataPath.accessURL.latin = dataPath.accessURL.america;
+
+        dataPath.publisher = "CNN";
+        dataPath.main = "article.cd--article"; //also check class 'cd--extra-small'
+        dataPath.title = ".cd__headline-text";
+        dataPath.excerpt = "";
+        dataPath.date = ""; //Todo: Read a better section of CNN
+        dataPath.link =".cd__headline a"
+
+
+
+    }else{
+        // for BBC
+        dataPath.accessURL = {};
+        dataPath.accessURL.main = "http://www.bbc.com/news";
+        dataPath.accessURL.world = "/world";
+        dataPath.accessURL.asia = "/world/asia";
+        dataPath.accessURL.europe = "/world/europe";
+        dataPath.accessURL.america = "/world/us_and_canada";
+        dataPath.accessURL.latin = "/world/latin_america";
+
+        dataPath.publisher = "BBC";
+        dataPath.main = ".sparrow-item";
+        dataPath.title = ".title-link__title-text";
+        dataPath.excerpt = ".sparrow-item__summary";
+        dataPath.date = ".date.date--v2"; // read attribute 'data-seconds'
+        dataPath.link = "a.title-link"; //read 'href'
+
+    }
+
+    return dataPath;
+}
+
 
 
 router.post('/',function (req,res,next) {
 
-    console.log(req.body);
-
-    var mode, degree;
-
-    if(req.body){
-        //calls to CNN  + BBC with thes logic >> mode, degree;
+    if(isProperDataSent(req.body)){
+       res.send({error:"No data found in request body. Server is not able to decide which type of news you want."});
+        return;
     }
-    //LOGIC ///// CNN + BBC   , FETCHING RELEVANT NEWS,  CREATING RESPONSE
 
-        res.json([
+    var emotion, degree, age,ethnicity ;
+    var dataSource, dataPath;
+
+    emotion = req.body.emotion || "";
+    degree = req.body.degree || "";
+    age = req.body.age || "";
+    ethnicity = req.body.ethnicity || "";
+
+    dataSource = selectDataSource(ethnicity);
+
+    dataPath = getDataPaths(dataSource);
+
+    utils.getNewsDetails(res,dataPath);
+
+});
+
+
+/* GET users listing. */
+router.get('/test', function(req, res, next) {
+
+    res.json([
             {
                 newsID:5777,
                 title:"U.K. pound plunges 6% in mysterious flash crash",
@@ -77,53 +155,6 @@ router.post('/',function (req,res,next) {
 
 
     ]);
-
-});
-
-
-/* GET users listing. */
-router.get('/test', function(req, res, next) {
-
-    //res.json({id:-1,title:'Test News Title',detail:'Test News Detail'});
-
-
-    //TODO: This is work in progress.
-    // url = 'http://www.cnn.com/us/';
-    // var json={};
-    //
-    // request(url, function(error, response, html){
-    //     if(!error){
-    //         var $ = cheerio.load(html);
-    //
-    //         var title, release, rating;
-    //         json = { title : "", release : "", rating : ""};
-    //
-    //         // We'll use the unique header class as a starting point.
-    //
-    //         $('.header').filter(function(){
-    //
-    //             // Let's store the data we filter into a variable so we can easily see what's going on.
-    //
-    //             var data = $(this);
-    //
-    //             // In examining the DOM we notice that the title rests within the first child element of the header tag.
-    //             // Utilizing jQuery we can easily navigate and get the text by writing the following code:
-    //
-    //             title = data.children().first().text();
-    //
-    //             // Once we have our title, we'll store it to the our json object.
-    //
-    //             json.title = title;
-    //
-    //             res.json(json);
-    //         });
-    //
-    //
-    //
-    //     }
-    // });
-
-
 
 });
 
